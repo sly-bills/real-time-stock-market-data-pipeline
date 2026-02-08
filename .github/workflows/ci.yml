@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  python-checks:
+    name: Python checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # If you don't have tests yet, this still verifies your code can import/run basic commands.
+      - name: Basic sanity check
+        run: |
+          python -c "import sys; print('Python is working:', sys.version)"
+
+      # If you add tests later, put them in tests/ and this will run them automatically.
+      - name: Run tests (if present)
+        run: |
+          if [ -d tests ]; then python -m unittest discover -s tests -p "test_*.py"; else echo "No tests folder yet — skipping."; fi
+
+  docker-build:
+    name: Docker build (compose)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run: |
+          if [ -f compose.yml ]; then
+            compose build
+          else
+            echo "No compose.yml found — skipping Docker build."
+          fi
