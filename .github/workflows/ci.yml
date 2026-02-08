@@ -48,10 +48,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Docker images
         run: |
-          if [ -f compose.yml ]; then
-            compose build
+          if [ -f docker-compose.yml ]; then
+            docker compose -f docker-compose.ymlbuild
           else
-            echo "No compose.yml found — skipping Docker build."
+            echo "No docker-compose.yml found — skipping Docker build."
           fi
