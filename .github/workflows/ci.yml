@@ -25,6 +25,11 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      - name: Lint code
+        run: |
+          if [ -f requirements.txt ]; then pip install flake8; fi
+          if [ -f requirements.txt ]; then flake8 .; else echo "No requirements.txt found — skipping linting."; fi
+
       # If you don't have tests yet, this still verifies your code can import/run basic commands.
       - name: Basic sanity check
         run: |
